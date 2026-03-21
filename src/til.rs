@@ -87,9 +87,13 @@ fn open_in_nvim(path: &Path) -> Result<()> {
     Ok(())
 }
 
-fn search_markdown_contents(dir: &Path, pattern: &str) -> Result<()> {
+pub fn search_markdown_contents(dir: &Path, pattern: &str) -> Result<()> {
+    let dir = normalize_dir(dir)?;
+    fs::create_dir_all(&dir)
+        .with_context(|| format!("Failed to make directory: {}", dir.display()))?;
+
     run_rg(
-        dir,
+        &dir,
         &[
             "--line-number",
             "--color",
@@ -103,9 +107,13 @@ fn search_markdown_contents(dir: &Path, pattern: &str) -> Result<()> {
     )
 }
 
-fn search_markdown_files(dir: &Path, pattern: &str) -> Result<()> {
+pub fn search_markdown_files(dir: &Path, pattern: &str) -> Result<()> {
+    let dir = normalize_dir(dir)?;
+    fs::create_dir_all(&dir)
+        .with_context(|| format!("Failed to make directory: {}", dir.display()))?;
+
     run_rg(
-        dir,
+        &dir,
         &[
             "--files",
             "--glob",
