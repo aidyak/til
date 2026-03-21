@@ -3,6 +3,7 @@ use chrono::Local;
 use clap::Parser;
 use std::fs::{self, OpenOptions};
 use std::path::{Path, PathBuf};
+use std::process::Command;
 
 #[derive(Parser, Debug)]
 #[command(name = "til")]
@@ -25,11 +26,10 @@ fn main() -> Result<()> {
     create_til_if_not_exists(&file_path)?;
 
     if args.file {
-        open::that(&file_path)
-            .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
+        open_in_nvim(&file_path)?;
         println!("Opened file: {}", file_path.display());
     } else {
-        open::that(&dir).with_context(|| format!("Failed to open directory: {}", dir.display()))?;
+        open_in_nvim(&dir)?;
         println!("Opened directory: {}", dir.display());
         println!("TIL file: {}", file_path.display());
     }
@@ -90,4 +90,12 @@ fn build_til_content(date: &str) -> String {
 -
 "#
     )
+}
+
+fn open_in_nvim(path: &Path) -> Result<()> {
+    Command::new("nvim")
+        .arg(path)
+        .status()
+        .with_context(|| format!("Failed to run Neovim: {}", path.display()))?;
+    Ok(())
 }
