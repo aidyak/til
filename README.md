@@ -26,3 +26,17 @@ til ~/til
 ```bash
 til ~/til --file
 ```
+
+### Search markdown contents
+```bash
+til ~/til --grep Rust
+```
+
+- Search inside `*.md` files with `ripgrep`
+
+### Search markdown file names
+```bash
+til ~/til --files rust
+```
+
+- Search `*.md` file paths with `ripgrep`

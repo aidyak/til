@@ -14,6 +14,12 @@ struct Args {
 
     #[arg(long)]
     file: bool,
+
+    #[arg(long, value_name = "PATTERN", conflicts_with = "files")]
+    grep: Option<String>,
+
+    #[arg(long, value_name = "PATTERN", conflicts_with = "grep")]
+    files: Option<String>,
 }
 
 fn main() -> Result<()> {
@@ -22,6 +28,17 @@ fn main() -> Result<()> {
     let dir = normalize_dir(&args.dir)?;
     fs::create_dir_all(&dir)
         .with_context(|| format!("Failed to make directory: {}", dir.display()))?;
+
+    if let Some(pattern) = &args.grep {
+        search_markdown_contents(&dir, pattern)?;
+        return Ok(());
+    }
+
+    if let Some(pattern) = &args.files {
+        search_markdown_files(&dir, pattern)?;
+        return Ok(());
+    }
+
     let file_path = build_today_til_path(&dir);
     create_til_if_not_exists(&file_path)?;
 
@@ -98,4 +115,52 @@ fn open_in_nvim(path: &Path) -> Result<()> {
         .status()
         .with_context(|| format!("Failed to run Neovim: {}", path.display()))?;
     Ok(())
+}
+
+fn search_markdown_contents(dir: &Path, pattern: &str) -> Result<()> {
+    run_rg(
+        dir,
+        &[
+            "--line-number",
+            "--color",
+            "never",
+            "--glob",
+            "*.md",
+            pattern,
+            ".",
+        ],
+        "markdown contents",
+    )
+}
+
+fn search_markdown_files(dir: &Path, pattern: &str) -> Result<()> {
+    run_rg(
+        dir,
+        &[
+            "--files",
+            "--glob",
+            "*.md",
+            "--iglob",
+            &format!("*{pattern}*"),
+        ],
+        "markdown files",
+    )
+}
+
+fn run_rg(dir: &Path, args: &[&str], target: &str) -> Result<()> {
+    let status = Command::new("rg")
+        .args(args)
+        .current_dir(dir)
+        .status()
+        .with_context(|| format!("Failed to run ripgrep for {target} in {}", dir.display()))?;
+
+    match status.code() {
+        Some(0) | Some(1) => Ok(()),
+        Some(code) => Err(anyhow::anyhow!(
+            "ripgrep exited with status code {code} while searching {target}"
+        )),
+        None => Err(anyhow::anyhow!(
+            "ripgrep terminated unexpectedly while searching {target}"
+        )),
+    }
 }
