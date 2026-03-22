@@ -24,7 +24,7 @@ pub fn open_or_create_today(dir: &Path, open_file: bool) -> Result<()> {
     Ok(())
 }
 
-fn normalize_dir(dir: &Path) -> Result<PathBuf> {
+pub fn normalize_dir(dir: &Path) -> Result<PathBuf> {
     if dir.is_absolute() {
         Ok(dir.to_path_buf())
     } else {
