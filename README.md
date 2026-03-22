@@ -1,5 +1,7 @@
 # TIL (Today I Learned)
 
+[![CI](https://github.com/aidyak/til/actions/workflows/ci.yml/badge.svg)](https://github.com/aidyak/til/actions/workflows/ci.yml)
+
 CLI for management your TIL markdown.
 You can open your md file at your directory and create simple md file.
 

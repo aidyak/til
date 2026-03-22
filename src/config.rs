@@ -46,10 +46,10 @@ fn config_file_path() -> Result<PathBuf> {
 }
 
 fn config_dir() -> Result<PathBuf> {
-    if let Ok(xdg_config_home) = env::var("XDG_CONFIG_HOME") {
-        if !xdg_config_home.trim().is_empty() {
-            return Ok(PathBuf::from(xdg_config_home).join("til"));
-        }
+    if let Ok(xdg_config_home) = env::var("XDG_CONFIG_HOME")
+        && !xdg_config_home.trim().is_empty()
+    {
+        return Ok(PathBuf::from(xdg_config_home).join("til"));
     }
 
     let home = env::var("HOME").context("Failed to resolve HOME for til config")?;
