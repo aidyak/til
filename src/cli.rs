@@ -1,12 +1,15 @@
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
 #[command(name = "til")]
 #[command(about = "指定ディレクトリに今日の日付のmarkdownを作成して開く")]
 pub struct Args {
-    #[arg(value_name = "DIR", default_value = ".")]
-    pub dir: PathBuf,
+    #[command(subcommand)]
+    pub command: Option<Commands>,
+
+    #[arg(value_name = "DIR")]
+    pub dir: Option<PathBuf>,
 
     #[arg(long)]
     pub file: bool,
@@ -16,4 +19,12 @@ pub struct Args {
 
     #[arg(long, conflicts_with = "grep")]
     pub files: Option<String>,
+}
+
+#[derive(Subcommand, Debug)]
+pub enum Commands {
+    Setup {
+        #[arg(value_name = "DIR")]
+        dir: PathBuf,
+    },
 }

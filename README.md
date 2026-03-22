@@ -16,27 +16,37 @@ cargo install --path .
 ### Basic Usage
 
 ```bash
-til ~/til
+til setup ~/til
+til
 ```
 
 - `~/til/YYYY-MM-DD-til.md` if not existed
-- Open file via Neovim
+- Open directory via Neovim
+- `til setup <dir>` saves the base directory for later runs
+
+### Open another directory once
+```bash
+til ~/other-til
+```
+
+- Temporarily overrides the saved base directory
+- Does not change the configured base directory
 
 ### Open file directly
 ```bash
-til ~/til --file
+til --file
 ```
 
 ### Search markdown contents
 ```bash
-til ~/til --grep Rust
+til --grep Rust
 ```
 
 - Search inside `*.md` files with `ripgrep`
 
 ### Search markdown file names
 ```bash
-til ~/til --files rust
+til --files rust
 ```
 
 - Search `*.md` file paths with `ripgrep`
